@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Image2Pdf.Core
 {
-    public class ImageTpPdfConverter
+    public class ImageToPdfConverter
     {
-        private string ConvertImagesToPdf(List<string> sourceFileList, string outputFilePath, IProgress<TaskProgress> progress)
+        public string ConvertImagesToPdf(List<string> sourceFileList, string outputFilePath, IProgress<TaskProgress> progress)
         {
             using (var outputStream = new MemoryStream())
             {

@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Image2Pdf.UI.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Image2Pdf" Height="417" Width="531" Loaded="Window_Loaded">
     <Grid>
-        
+        <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="33,36,0,0" VerticalAlignment="Top" Width="224" SelectionChanged="fileListBox_SelectionChanged"/>
+        <Button x:Name="moveUpButton" Content="Up" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="30" Click="moveUpButton_Click" IsEnabled="False"/>
+        <Button x:Name="moveDownButton" Content="Down" HorizontalAlignment="Left" Margin="0,134,0,0" VerticalAlignment="Top" Width="30" Click="moveDownButton_Click" IsEnabled="False"/>
+        <Button x:Name="selectFilesButton" Content="Add Images" HorizontalAlignment="Left" Margin="33,243,0,0" VerticalAlignment="Top" Width="104" Click="selectFilesButton_Click"/>
+        <Button x:Name="convertButton" Content="Convert Image(s) to PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="185" Margin="269,145,0,0" Click="convertButton_Click"/>
+        <TextBox x:Name="outputFileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="33,288,0,0" TextWrapping="Wrap" Text="Output.pdf" VerticalAlignment="Top" Width="224"/>
+        <Button x:Name="selectOutputDirectory" Content="..." HorizontalAlignment="Left" Margin="261,288,0,0" VerticalAlignment="Top" Width="36" Click="selectOutputDirectory_Click"/>
+        <Button x:Name="deleteFilesButton" Content="Remove selected" HorizontalAlignment="Left" Margin="142,243,0,0" VerticalAlignment="Top" Width="115" Click="deleteFilesButton_Click" IsEnabled="False"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="262,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="242"/>
+        <Button x:Name="openPdfButton" Content="Open PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="242" Margin="262,118,0,0" Click="openPdfButton_Click" IsEnabled="False" Visibility="Hidden"/>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="10" VerticalAlignment="Top" Width="100" Margin="269,75,0,0" Visibility="Hidden"/>
+
+
     </Grid>
 </Window>

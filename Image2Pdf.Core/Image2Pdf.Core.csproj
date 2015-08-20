@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageTpPdfConverter.cs" />
+    <Compile Include="ImageToPdfConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskProgress.cs" />
   </ItemGroup>
