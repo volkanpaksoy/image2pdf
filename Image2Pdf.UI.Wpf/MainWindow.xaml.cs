@@ -23,7 +23,7 @@ namespace Image2Pdf.UI.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<ListBoxItem> ImageFileCollection { get; set; }
+        public ObservableCollection<ListBoxItem> ImageFileCollection { get; set; } = new ObservableCollection<ListBoxItem>();
 
         public MainWindow()
         {
@@ -31,18 +31,12 @@ namespace Image2Pdf.UI.Wpf
 
             this.DataContext = this;
 
-            Init();
-        }
-
-        private void Init()
-        {
-            ImageFileCollection = new ObservableCollection<ListBoxItem>();
-
+            
         }
 
         private void wizard_Next(object sender, RoutedEventArgs e)
         {
-
+            ValidateInputPage();
         }
 
         private void wizard_Finish(object sender, RoutedEventArgs e)
@@ -74,6 +68,28 @@ namespace Image2Pdf.UI.Wpf
 
                     ImageFileCollection.Add(newItem);
                 });
+
+                CheckDuplicates();
+
+                ValidateInputPage();
+            }
+        }
+
+        private void CheckDuplicates()
+        {
+            if (removeDuplicatesCheckbox.IsChecked.Value)
+            {
+                List<ListBoxItem> uniquePaths = ImageFileCollection.GroupBy(i => i.Tag)
+                    .Select(g => new ListBoxItem() { Tag = g.Key, Content = System.IO.Path.GetFileName(g.Key.ToString()) })
+                    .Distinct()
+                    .Cast<ListBoxItem>()
+                    .ToList();
+
+                if (uniquePaths.Count < ImageFileCollection.Count)
+                {
+                    ImageFileCollection.Clear();
+                    uniquePaths.ForEach(i => ImageFileCollection.Add(i));
+                }
             }
         }
 
@@ -163,6 +179,19 @@ namespace Image2Pdf.UI.Wpf
             moveDownButton.IsEnabled = CanMoveDown(selectedItems);
         }
 
+        private void ValidateInputPage()
+        {
+            if (fileListBox.Items.Count == 0)
+            {
+                wizard.NextEnabled = false;
+            }
+            else
+            {
+                wizard.NextEnabled = true;
+            }
+        }
+
+
         private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateButtonStatus();
@@ -177,6 +206,8 @@ namespace Image2Pdf.UI.Wpf
             {
                 ImageFileCollection.Remove(selectedItem);
             }
+
+            ValidateInputPage();
         }
 
         private void selectOutputDirectory_Click(object sender, RoutedEventArgs e)
@@ -209,6 +240,8 @@ namespace Image2Pdf.UI.Wpf
             var converter = new ImageToPdfConverter();
             var outputFilePath = outputFileNameTextBox.Text;
             await Task.Run(() => converter.ConvertImagesToPdf(sourceFileList, outputFilePath, progress));
+
+
         }
 
         private void openPdfButton_Click(object sender, RoutedEventArgs e)
@@ -216,5 +249,9 @@ namespace Image2Pdf.UI.Wpf
             System.Diagnostics.Process.Start(outputFileNameTextBox.Text);
         }
 
+        private void removeDuplicatesCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckDuplicates();
+        }
     }
 }

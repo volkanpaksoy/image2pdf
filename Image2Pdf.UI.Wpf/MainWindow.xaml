@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Image2Pdf.UI.Wpf"
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf" x:Class="Image2Pdf.UI.Wpf.MainWindow"
         mc:Ignorable="d"
-        Title="Image2PDF" Height="466" Width="486">
+        Title="Image2PDF" Height="466" Width="486"
+        ResizeMode="NoResize">
     <Grid>
 
         <syncfusion:WizardControl x:Name="wizard" 
@@ -21,7 +22,7 @@
                                   CancelButtonCancelsWindow="True" 
                                   HelpVisible="False" 
                                   HelpText="" 
-                                  NextEnabled="True">
+                                  NextEnabled="False" >
 
             <syncfusion:WizardPage>
                 <Grid>
@@ -30,8 +31,8 @@
                     <Button x:Name="moveDownButton" Content="Down" HorizontalAlignment="Left" Margin="0,134,0,0" VerticalAlignment="Top" Width="30" Click="moveDownButton_Click" IsEnabled="False"/>
                     <Button x:Name="selectFilesButton" Content="Add Images" HorizontalAlignment="Left" Margin="33,243,0,0" VerticalAlignment="Top" Width="104" Click="selectFilesButton_Click"/>
                     <Button x:Name="deleteFilesButton" Content="Remove selected" HorizontalAlignment="Left" Margin="142,243,0,0" VerticalAlignment="Top" Width="115" Click="deleteFilesButton_Click" IsEnabled="False"/>
-                    <CheckBox x:Name="checkBox" HorizontalAlignment="Left" Margin="290,36,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.265,-1.688" Width="121" Height="20">
-                        <TextBlock TextWrapping="Wrap" Text="Remove duplicates automatically" />
+                    <CheckBox x:Name="removeDuplicatesCheckbox" HorizontalAlignment="Left" Margin="290,36,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.265,-1.688" Width="121" Height="20" IsChecked="True" Checked="removeDuplicatesCheckbox_Checked">
+                        <TextBlock TextWrapping="Wrap" Text="Remove duplicates automatically" Height="50" />
                     </CheckBox>
                 </Grid>
             </syncfusion:WizardPage>
