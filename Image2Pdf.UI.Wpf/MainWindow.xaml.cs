@@ -1,6 +1,7 @@
 ﻿using Image2Pdf.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,9 +23,36 @@ namespace Image2Pdf.UI.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<ListBoxItem> ImageFileCollection { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.DataContext = this;
+
+            Init();
+        }
+
+        private void Init()
+        {
+            ImageFileCollection = new ObservableCollection<ListBoxItem>();
+
+        }
+
+        private void wizard_Next(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void wizard_Finish(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void wizard_Cancel(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void selectFilesButton_Click(object sender, RoutedEventArgs e)
@@ -44,8 +72,122 @@ namespace Image2Pdf.UI.Wpf
                         Tag = filename
                     };
 
-                    fileListBox.Items.Add(newItem);
+                    ImageFileCollection.Add(newItem);
                 });
+            }
+        }
+
+        private void moveDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            if (CanMoveDown(selectedItems))
+            {
+                MoveDown(selectedItems);
+            }
+        }
+
+        private void moveUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            if (CanMoveUp(selectedItems))
+            {
+                MoveUp(selectedItems);
+            }
+        }
+
+        private void MoveUp(List<ListBoxItem> selectedItems)
+        {
+            if (selectedItems.Count == 0) { return; }
+
+            var indexList = selectedItems
+                .Select(s => ImageFileCollection.IndexOf(s))
+                .OrderBy(n => n)
+                .ToList();
+
+            foreach (var index in indexList)
+            {
+                ImageFileCollection.Move(index, index - 1);
+            }
+
+            UpdateButtonStatus();
+        }
+
+        private void MoveDown(List<ListBoxItem> selectedItems)
+        {
+            if (selectedItems.Count == 0) { return; }
+
+            var indexList = selectedItems
+                .Select(s => ImageFileCollection.IndexOf(s))
+                .OrderByDescending(n => n)
+                .ToList();
+
+            foreach (var index in indexList)
+            {
+                ImageFileCollection.Move(index, index + 1);
+            }
+
+            UpdateButtonStatus();
+        }
+
+        private bool CanMoveUp(List<ListBoxItem> selectedItems)
+        {
+            if (selectedItems.Count == 0) { return false; }
+
+            return selectedItems.Select(s => ImageFileCollection.IndexOf(s)).Min() != 0;
+        }
+
+        private bool CanMoveDown(List<ListBoxItem> selectedItems)
+        {
+            if (selectedItems.Count == 0) { return false; }
+
+            return selectedItems.Select(s => ImageFileCollection.IndexOf(s)).Max() != ImageFileCollection.Count - 1;
+        }
+
+        private void UpdateButtonStatus()
+        {
+            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            if (selectedItems.Count == 0)
+            {
+                moveUpButton.IsEnabled = false;
+                moveDownButton.IsEnabled = false;
+                deleteFilesButton.IsEnabled = false;
+            }
+            else
+            {
+                moveUpButton.IsEnabled = true;
+                moveDownButton.IsEnabled = true;
+                deleteFilesButton.IsEnabled = true;
+            }
+
+            moveUpButton.IsEnabled = CanMoveUp(selectedItems);
+            moveDownButton.IsEnabled = CanMoveDown(selectedItems);
+        }
+
+        private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonStatus();
+        }
+
+        private void deleteFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (fileListBox.SelectedItems == null) { return; }
+
+            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            foreach (var selectedItem in selectedItems)
+            {
+                ImageFileCollection.Remove(selectedItem);
+            }
+        }
+
+        private void selectOutputDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FolderBrowserDialog();
+            dialog.ShowNewFolderButton = true;
+            DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                string currentFileName = System.IO.Path.GetFileName(outputFileNameTextBox.Text);
+                outputFileNameTextBox.Text = $@"{dialog.SelectedPath}\{currentFileName}";
             }
         }
 
@@ -69,103 +211,10 @@ namespace Image2Pdf.UI.Wpf
             await Task.Run(() => converter.ConvertImagesToPdf(sourceFileList, outputFilePath, progress));
         }
 
-        private void selectOutputDirectory_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new FolderBrowserDialog();
-            dialog.ShowNewFolderButton = true;
-            DialogResult result = dialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                string currentFileName = System.IO.Path.GetFileName(outputFileNameTextBox.Text);
-                outputFileNameTextBox.Text = $@"{dialog.SelectedPath}\{currentFileName}";
-            }
-        }
-
-        private void deleteFilesButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (fileListBox.SelectedItem == null)
-            {
-                return;
-            }
-
-            fileListBox.Items.Remove(fileListBox.SelectedItem);
-        }
-
-        private void moveDownButton_Click(object sender, RoutedEventArgs e)
-        {
-            MoveItem(sender);
-        }
-
-        private void moveUpButton_Click(object sender, RoutedEventArgs e)
-        {
-            MoveItem(sender);
-        }
-
-        private void MoveItem(object sender)
-        {
-            var button = sender as System.Windows.Controls.Button;
-            if (button == null)
-            {
-                return;
-            }
-
-            var selectedItem = fileListBox.SelectedItem;
-            var selectedIndex = fileListBox.SelectedIndex;
-            fileListBox.Items.RemoveAt(selectedIndex);
-
-            if (button.Content.ToString().ToLower() == "up")
-            {
-                fileListBox.Items.Insert(selectedIndex - 1, selectedItem);
-            }
-            else if (button.Content.ToString().ToLower() == "down")
-            {
-                fileListBox.Items.Insert(selectedIndex + 1, selectedItem);
-            }
-
-            fileListBox.SelectedItem = selectedItem;
-        }
-
-        private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (fileListBox.SelectedItems.Count == 0)
-            {
-                moveUpButton.IsEnabled = false;
-                moveDownButton.IsEnabled = false;
-                deleteFilesButton.IsEnabled = false;
-            }
-            else
-            {
-                moveUpButton.IsEnabled = true;
-                moveDownButton.IsEnabled = true;
-                deleteFilesButton.IsEnabled = true;
-            }
-
-            moveUpButton.IsEnabled = !(fileListBox.SelectedIndex == 0);
-            moveDownButton.IsEnabled = !(fileListBox.SelectedIndex == fileListBox.Items.Count - 1);
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            InitList();
-        }
-
-        private void InitList()
-        {
-            fileListBox.Items.Clear();
-
-            foreach (var filename in Directory.GetFiles(@"C:\Temp\Test").Take(5))
-            {
-                fileListBox.Items.Add(new ListBoxItem()
-                {
-                    Content = System.IO.Path.GetFileName(filename),
-                    Tag = filename
-                });
-            }
-        }
-
         private void openPdfButton_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(outputFileNameTextBox.Text);
         }
+
     }
 }
