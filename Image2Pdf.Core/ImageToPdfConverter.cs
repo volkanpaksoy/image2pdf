@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using Image2Pdf.Core.InputFileHanding;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,24 @@ namespace Image2Pdf.Core
 {
     public class ImageToPdfConverter
     {
-        public string ConvertImagesToPdf(List<string> sourceFileList, string outputFilePath, IProgress<TaskProgress> progress)
+        private IInputFileHandlingStrategy _inputFileHandlingStrategy;
+        private List<string> _sourceFileList;
+        private string _outputFilePath;
+
+        public ImageToPdfConverter(List<string> sourceFileList, 
+            string outputFilePath,
+            IInputFileHandlingStrategy inputFileHandlingStrategy)
         {
+            _sourceFileList = sourceFileList;
+            _outputFilePath = outputFilePath;
+            _inputFileHandlingStrategy = inputFileHandlingStrategy;
+        }
+
+        public void ConvertImagesToPdf(IProgress<TaskProgress> progress)
+        {
+            if (_sourceFileList == null || _sourceFileList.Count == 0) { throw new ArgumentException("At least 1 source file must be specified"); }
+            if (string.IsNullOrWhiteSpace(_outputFilePath)) { throw new ArgumentException("Invalid output file name"); }
+
             using (var outputStream = new MemoryStream())
             {
                 int pageCount = 0;
@@ -25,7 +42,7 @@ namespace Image2Pdf.Core
                     PdfWriter.GetInstance(document, outputStream).SetFullCompression();
                     document.Open();
 
-                    foreach (string sourceFilePath in sourceFileList)
+                    foreach (string sourceFilePath in _sourceFileList)
                     {
                         iTextSharp.text.Rectangle pageSize = null;
 
@@ -45,8 +62,8 @@ namespace Image2Pdf.Core
                             progress.Report(new TaskProgress()
                             {
                                 ProcessedInputCount = pageCount,
-                                StatusMessage = $"{pageCount} of {sourceFileList.Count} images have been added",
-                                CompletedPercentage = (pageCount / sourceFileList.Count) * 100
+                                StatusMessage = $"{pageCount} of {_sourceFileList.Count} images have been added",
+                                CompletedPercentage = (pageCount / _sourceFileList.Count) * 100
                             });
                         }
                     }
@@ -54,13 +71,30 @@ namespace Image2Pdf.Core
 
                 progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"Saving files...", CompletedPercentage = 100 });
 
-                File.WriteAllBytes(outputFilePath, outputStream.ToArray());
+                File.WriteAllBytes(_outputFilePath, outputStream.ToArray());
 
                 progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"PDF creation completed.", CompletedPercentage = 100 });
 
-                return outputFilePath;
+
+                HandleInputFiles();
+
+                HandleOutputFile();
             }
         }
+
+        private void HandleInputFiles()
+        {
+            if (_inputFileHandlingStrategy != null)
+            {
+                _inputFileHandlingStrategy.Process(_sourceFileList);
+            }
+        }
+
+        private void HandleOutputFile()
+        {
+        }
+
+
 
     }
 }

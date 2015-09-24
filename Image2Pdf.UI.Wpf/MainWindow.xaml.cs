@@ -1,4 +1,5 @@
 ﻿using Image2Pdf.Core;
+using Image2Pdf.Core.InputFileHanding;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,11 +11,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Syncfusion.Windows.Tools.Controls;
 
 namespace Image2Pdf.UI.Wpf
 {
@@ -24,14 +25,13 @@ namespace Image2Pdf.UI.Wpf
     public partial class MainWindow : Window
     {
         public ObservableCollection<ListBoxItem> ImageFileCollection { get; set; } = new ObservableCollection<ListBoxItem>();
+        private IInputFileHandlingStrategy _inputFileHandlingStrategy = null;
 
         public MainWindow()
         {
             InitializeComponent();
 
             this.DataContext = this;
-
-            
         }
 
         private void wizard_Next(object sender, RoutedEventArgs e)
@@ -49,9 +49,28 @@ namespace Image2Pdf.UI.Wpf
 
         }
 
+        private void radioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var radio = sender as RadioButton;
+            if (radio.Tag == null)
+            {
+                return;
+            }
+
+            int selectedValue = (int)radio.Tag;
+            switch (selectedValue)
+            {
+                case 0: _inputFileHandlingStrategy = null; break;
+                case 1: _inputFileHandlingStrategy = new MoveInputFilesToRecyclebinStrategy(); break;
+                case 2: _inputFileHandlingStrategy = new DeleteInputFilesStrategy(); break;
+                case 3: _inputFileHandlingStrategy = null; break;
+                case 4: _inputFileHandlingStrategy = null; break;
+            }
+        }
+
         private void selectFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            var dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.Multiselect = true;
 
             bool? result = dlg.ShowDialog();
@@ -79,7 +98,7 @@ namespace Image2Pdf.UI.Wpf
         {
             if (removeDuplicatesCheckbox.IsChecked.Value)
             {
-                List<ListBoxItem> uniquePaths = ImageFileCollection.GroupBy(i => i.Tag)
+                var uniquePaths = ImageFileCollection.GroupBy(i => i.Tag)
                     .Select(g => new ListBoxItem() { Tag = g.Key, Content = System.IO.Path.GetFileName(g.Key.ToString()) })
                     .Distinct()
                     .Cast<ListBoxItem>()
@@ -95,7 +114,7 @@ namespace Image2Pdf.UI.Wpf
 
         private void moveDownButton_Click(object sender, RoutedEventArgs e)
         {
-            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            var selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
             if (CanMoveDown(selectedItems))
             {
                 MoveDown(selectedItems);
@@ -104,7 +123,7 @@ namespace Image2Pdf.UI.Wpf
 
         private void moveUpButton_Click(object sender, RoutedEventArgs e)
         {
-            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            var selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
             if (CanMoveUp(selectedItems))
             {
                 MoveUp(selectedItems);
@@ -161,7 +180,7 @@ namespace Image2Pdf.UI.Wpf
 
         private void UpdateButtonStatus()
         {
-            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            var selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
             if (selectedItems.Count == 0)
             {
                 moveUpButton.IsEnabled = false;
@@ -190,8 +209,7 @@ namespace Image2Pdf.UI.Wpf
                 wizard.NextEnabled = true;
             }
         }
-
-
+        
         private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateButtonStatus();
@@ -201,7 +219,7 @@ namespace Image2Pdf.UI.Wpf
         {
             if (fileListBox.SelectedItems == null) { return; }
 
-            List<ListBoxItem> selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
+            var selectedItems = fileListBox.SelectedItems.Cast<ListBoxItem>().ToList();
             foreach (var selectedItem in selectedItems)
             {
                 ImageFileCollection.Remove(selectedItem);
@@ -212,9 +230,9 @@ namespace Image2Pdf.UI.Wpf
 
         private void selectOutputDirectory_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new FolderBrowserDialog();
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
             dialog.ShowNewFolderButton = true;
-            DialogResult result = dialog.ShowDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 string currentFileName = System.IO.Path.GetFileName(outputFileNameTextBox.Text);
@@ -237,11 +255,9 @@ namespace Image2Pdf.UI.Wpf
                 progressBar.Value = prog.ProcessedInputCount;
             });
 
-            var converter = new ImageToPdfConverter();
             var outputFilePath = outputFileNameTextBox.Text;
-            await Task.Run(() => converter.ConvertImagesToPdf(sourceFileList, outputFilePath, progress));
-
-
+            var converter = new ImageToPdfConverter(sourceFileList, outputFilePath, _inputFileHandlingStrategy);
+            await Task.Run(() => converter.ConvertImagesToPdf(progress));
         }
 
         private void openPdfButton_Click(object sender, RoutedEventArgs e)
@@ -252,6 +268,14 @@ namespace Image2Pdf.UI.Wpf
         private void removeDuplicatesCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             CheckDuplicates();
+        }
+
+        private void wizard_SelectedPageChanging(object sender, WizardPageSelectionChangeEventArgs e)
+        {
+            if (e.NewPage.Name == "output")
+            {
+                outputFileNameTextBox.Text = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ImageFileCollection.First().Tag.ToString()), "output.pdf");
+            }
         }
     }
 }

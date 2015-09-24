@@ -22,9 +22,9 @@
                                   CancelButtonCancelsWindow="True" 
                                   HelpVisible="False" 
                                   HelpText="" 
-                                  NextEnabled="False" >
+                                  NextEnabled="False" SelectedPageChanging="wizard_SelectedPageChanging" >
 
-            <syncfusion:WizardPage>
+            <syncfusion:WizardPage Name="input">
                 <Grid>
                     <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="33,36,0,0" VerticalAlignment="Top" Width="224" SelectionChanged="fileListBox_SelectionChanged" SelectionMode="Extended" ItemsSource="{Binding Path=ImageFileCollection}"/>
                     <Button x:Name="moveUpButton" Content="Up" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="30" Click="moveUpButton_Click" IsEnabled="False"/>
@@ -36,21 +36,29 @@
                     </CheckBox>
                 </Grid>
             </syncfusion:WizardPage>
-            <syncfusion:WizardPage>
+            <syncfusion:WizardPage Name="output">
                 <Grid>
                     <TextBox x:Name="outputFileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="33,288,0,0" TextWrapping="Wrap" Text="Output.pdf" VerticalAlignment="Top" Width="224"/>
                     <Button x:Name="selectOutputDirectory" Content="..." HorizontalAlignment="Left" Margin="261,288,0,0" VerticalAlignment="Top" Width="36" Click="selectOutputDirectory_Click"/>
                 </Grid>
             </syncfusion:WizardPage>
 
-            <syncfusion:WizardPage>
+            <syncfusion:WizardPage Name="run">
                 <Grid>
                     <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="262,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="242"/>
                     <Button x:Name="convertButton" Content="Convert Image(s) to PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="185" Margin="269,145,0,0" Click="convertButton_Click"/>
 
                     <Button x:Name="openPdfButton" Content="Open PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="242" Margin="262,118,0,0" Click="openPdfButton_Click"/>
                     <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="10" VerticalAlignment="Top" Width="100" Margin="269,75,0,0" Visibility="Hidden"/>
-
+                    
+                    <Label Content="Action to take on input files:" />
+                    <StackPanel Name="inputFileActionContainer">
+                        <RadioButton Checked="radioButton_Checked" GroupName="InputFileAction" Content="Leave them alone!" IsChecked="True" Tag="1" />
+                        <RadioButton Checked="radioButton_Checked" GroupName="InputFileAction" Content="Move to recycle bin" Tag="2" />
+                        <RadioButton Checked="radioButton_Checked" GroupName="InputFileAction" Content="Delete permanently" Tag="3" />
+                        <RadioButton Checked="radioButton_Checked" GroupName="InputFileAction" Content="Backup files under {output pdf path\images-of-{{output pdf filename}}}" IsEnabled="false" Tag="4" />
+                        <RadioButton Checked="radioButton_Checked" GroupName="InputFileAction" Content="Rename the files ({original filename}-Page-{n}-of-{output pdf filename}.ext)" IsEnabled="false" Tag="5" />
+                    </StackPanel>
                 </Grid>
             </syncfusion:WizardPage>
         </syncfusion:WizardControl>
