@@ -214,34 +214,32 @@ namespace Image2Pdf.UI.Wpf
 
         #region Page 3: Generate PDF
 
-        private void convertButton_Click(object sender, RoutedEventArgs e)
+        private async void convertButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdatePageElements(false);
-
             try
             {
-                StartProcess();
-
-                wizard.CancelEnabled = false;
-                wizard.BackEnabled = false;
-                openPdfButton.IsEnabled = true;
                 convertButton.IsEnabled = false;
+                wizard.BackEnabled = false;
+                wizard.CancelEnabled = false;
+                inputFileActionContainer.IsEnabled = false;
+                progressMessageTextBox.Visibility = Visibility.Visible;
+
+                await StartProcess();
+                
+                openPdfButton.IsEnabled = true;
             }
             catch (Exception ex)
             {
                 progressMessageTextBox.Foreground = new SolidColorBrush(Colors.Red);
                 progressMessageTextBox.Text = $"Error: {ex.Message}";
             }
+            finally
+            {
+                wizard.FinishEnabled = true;
+            }
         }
 
-        private void UpdatePageElements(bool enable)
-        {
-            inputFileActionContainer.IsEnabled = false;
-            progressMessageTextBox.Visibility = Visibility.Visible;
-
-        }
-
-        private void StartProcess()
+        private async Task StartProcess()
         {
             var sourceFileList = fileListBox.Items.Cast<ListBoxItem>()
                 .Select(lbi => lbi.Tag.ToString())
@@ -258,7 +256,10 @@ namespace Image2Pdf.UI.Wpf
 
             var outputFilePath = outputFileNameTextBox.Text;
             var converter = new ImageToPdfConverter(sourceFileList, outputFilePath, _inputFileHandlingStrategy);
-            Task.Run(() => converter.ConvertImagesToPdf(progress));
+            // Task process = Task.Run(() => converter.ConvertImagesToPdf(progress));
+            // Task.WaitAll(process);
+
+            await Task.Run(() => converter.ConvertImagesToPdf(progress));
         }
 
         private void openPdfButton_Click(object sender, RoutedEventArgs e)
@@ -352,7 +353,13 @@ namespace Image2Pdf.UI.Wpf
 
         private void wizard_SelectedPageChanging(object sender, WizardPageSelectionChangeEventArgs e)
         {
-            if (e.NewPage.Name == "output")
+            if (e.NewPage.Name == "input")
+            {
+                wizard.BackEnabled = false;
+                wizard.FinishEnabled = false;
+                ValidateInputPage();
+            }
+            else if(e.NewPage.Name == "output")
             {
                 if (!_userUpdatedOutput)
                 {
@@ -361,10 +368,16 @@ namespace Image2Pdf.UI.Wpf
                         $"image2df-output-{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.pdf");
                     _userUpdatedOutput = false;
                 }
+
+                wizard.BackEnabled = true;
+                wizard.NextEnabled = true;
+                wizard.FinishEnabled = false;
             }
             else if (e.NewPage.Name == "run")
             {
+                wizard.BackEnabled = true;
                 wizard.NextEnabled = false;
+                wizard.FinishEnabled = false;
             }
         }
 

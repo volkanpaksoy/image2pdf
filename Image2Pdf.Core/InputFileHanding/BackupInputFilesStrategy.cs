@@ -9,7 +9,7 @@ namespace Image2Pdf.Core.InputFileHanding
 {
     public class BackupInputFilesStrategy : IInputFileHandlingStrategy
     {
-        public void Process(List<string> sourceFileList, string outputFilePath)
+        public void Process(List<string> sourceFileList, string outputFilePath, IProgress<TaskProgress> progress)
         {
             string backupFolderName = $"images-of-{Path.GetFileNameWithoutExtension(outputFilePath)}";
             string backupFolderFullPath = Path.Combine(Path.GetDirectoryName(outputFilePath), backupFolderName);

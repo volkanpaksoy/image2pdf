@@ -73,17 +73,20 @@ namespace Image2Pdf.Core
 
                 File.WriteAllBytes(_outputFilePath, outputStream.ToArray());
 
-                progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"PDF creation completed.", CompletedPercentage = 100 });
+                progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"PDF file has been created.", CompletedPercentage = 100 });
+                progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"Handling input files...", CompletedPercentage = 0 });
 
-                HandleInputFiles();
+                HandleInputFiles(progress);
+
+                progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"Operation completed successfully", CompletedPercentage = 100 });
             }
         }
 
-        private void HandleInputFiles()
+        private void HandleInputFiles(IProgress<TaskProgress> progress)
         {
             if (_inputFileHandlingStrategy != null)
             {
-                _inputFileHandlingStrategy.Process(_sourceFileList, _outputFilePath);
+                _inputFileHandlingStrategy.Process(_sourceFileList, _outputFilePath, progress);
             }
         }
     }

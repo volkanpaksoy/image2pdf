@@ -17,6 +17,8 @@
                                   Width="468" 
                                   Next="wizard_Next" 
                                   Finish="wizard_Finish" 
+                                  FinishText="Save settings and Exit"
+                                  FinishEnabled="False"
                                   Cancel="wizard_Cancel" 
                                   FinishButtonClosesWindow="True" 
                                   CancelButtonCancelsWindow="False" 
