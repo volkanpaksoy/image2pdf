@@ -8,6 +8,6 @@ namespace Image2Pdf.Core.InputFileHanding
 {
     public interface IInputFileHandlingStrategy
     {
-        void Process(List<string> sourceFileList);
+        void Process(List<string> sourceFileList, string outputFilePath);
     }
 }

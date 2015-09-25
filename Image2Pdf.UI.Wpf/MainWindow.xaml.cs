@@ -32,41 +32,12 @@ namespace Image2Pdf.UI.Wpf
             InitializeComponent();
 
             this.DataContext = this;
-        }
 
-        private void wizard_Next(object sender, RoutedEventArgs e)
-        {
-            ValidateInputPage();
-        }
-
-        private void wizard_Finish(object sender, RoutedEventArgs e)
-        {
 
         }
 
-        private void wizard_Cancel(object sender, RoutedEventArgs e)
-        {
 
-        }
-
-        private void radioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var radio = sender as RadioButton;
-            if (radio.Tag == null)
-            {
-                return;
-            }
-
-            int selectedValue = (int)radio.Tag;
-            switch (selectedValue)
-            {
-                case 0: _inputFileHandlingStrategy = null; break;
-                case 1: _inputFileHandlingStrategy = new MoveInputFilesToRecyclebinStrategy(); break;
-                case 2: _inputFileHandlingStrategy = new DeleteInputFilesStrategy(); break;
-                case 3: _inputFileHandlingStrategy = null; break;
-                case 4: _inputFileHandlingStrategy = null; break;
-            }
-        }
+        #region Page 1: Input
 
         private void selectFilesButton_Click(object sender, RoutedEventArgs e)
         {
@@ -198,23 +169,6 @@ namespace Image2Pdf.UI.Wpf
             moveDownButton.IsEnabled = CanMoveDown(selectedItems);
         }
 
-        private void ValidateInputPage()
-        {
-            if (fileListBox.Items.Count == 0)
-            {
-                wizard.NextEnabled = false;
-            }
-            else
-            {
-                wizard.NextEnabled = true;
-            }
-        }
-        
-        private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateButtonStatus();
-        }
-
         private void deleteFilesButton_Click(object sender, RoutedEventArgs e)
         {
             if (fileListBox.SelectedItems == null) { return; }
@@ -228,6 +182,20 @@ namespace Image2Pdf.UI.Wpf
             ValidateInputPage();
         }
 
+        private void fileListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonStatus();
+        }
+
+        private void removeDuplicatesCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckDuplicates();
+        }
+
+        #endregion
+
+        #region Page 2: Output
+        
         private void selectOutputDirectory_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -239,6 +207,10 @@ namespace Image2Pdf.UI.Wpf
                 outputFileNameTextBox.Text = $@"{dialog.SelectedPath}\{currentFileName}";
             }
         }
+
+        #endregion
+
+        #region Page 3: Generate PDF
 
         private async void convertButton_Click(object sender, RoutedEventArgs e)
         {
@@ -265,11 +237,64 @@ namespace Image2Pdf.UI.Wpf
             System.Diagnostics.Process.Start(outputFileNameTextBox.Text);
         }
 
-        private void removeDuplicatesCheckbox_Checked(object sender, RoutedEventArgs e)
+        private void radioButton_Checked(object sender, RoutedEventArgs e)
         {
-            CheckDuplicates();
+            var radio = sender as RadioButton;
+            if (radio.Tag == null)
+            {
+                return;
+            }
+
+            int selectedValue = int.Parse(radio.Tag.ToString());
+            switch (selectedValue)
+            {
+                case 1: _inputFileHandlingStrategy = null; break;
+                case 2: _inputFileHandlingStrategy = new MoveInputFilesToRecyclebinStrategy(); break;
+                case 3: _inputFileHandlingStrategy = new DeleteInputFilesStrategy(); break;
+                case 4: _inputFileHandlingStrategy = new BackupInputFilesStrategy(); break;
+                case 5: _inputFileHandlingStrategy = new RenameInputFilesStrategy(); break;
+            }
+            
         }
 
+        #endregion
+
+        private void wizard_Next(object sender, RoutedEventArgs e)
+        {
+            ValidateInputPage();
+        }
+
+        private void wizard_Finish(object sender, RoutedEventArgs e)
+        {
+            SaveConfigChanges();
+        }
+
+        private void wizard_Cancel(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to exit the application?", "Exit", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                Close();
+            }
+        }
+
+        private void SaveConfigChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ValidateInputPage()
+        {
+            if (fileListBox.Items.Count == 0)
+            {
+                wizard.NextEnabled = false;
+            }
+            else
+            {
+                wizard.NextEnabled = true;
+            }
+        }
+        
         private void wizard_SelectedPageChanging(object sender, WizardPageSelectionChangeEventArgs e)
         {
             if (e.NewPage.Name == "output")

@@ -75,10 +75,7 @@ namespace Image2Pdf.Core
 
                 progress.Report(new TaskProgress() { ProcessedInputCount = pageCount, StatusMessage = $"PDF creation completed.", CompletedPercentage = 100 });
 
-
                 HandleInputFiles();
-
-                HandleOutputFile();
             }
         }
 
@@ -86,15 +83,8 @@ namespace Image2Pdf.Core
         {
             if (_inputFileHandlingStrategy != null)
             {
-                _inputFileHandlingStrategy.Process(_sourceFileList);
+                _inputFileHandlingStrategy.Process(_sourceFileList, _outputFilePath);
             }
         }
-
-        private void HandleOutputFile()
-        {
-        }
-
-
-
     }
 }
