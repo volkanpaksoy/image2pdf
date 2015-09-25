@@ -14,7 +14,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Syncfusion.Windows.Tools.Controls;
 
 namespace Image2Pdf.UI.Wpf
@@ -26,6 +25,7 @@ namespace Image2Pdf.UI.Wpf
     {
         public ObservableCollection<ListBoxItem> ImageFileCollection { get; set; } = new ObservableCollection<ListBoxItem>();
         private IInputFileHandlingStrategy _inputFileHandlingStrategy = null;
+        private bool _userUpdatedOutput = false;
 
         public MainWindow()
         {
@@ -33,7 +33,9 @@ namespace Image2Pdf.UI.Wpf
 
             this.DataContext = this;
 
-
+            SetSelectedInputFileHandlingStrategy();
+            
+            _userUpdatedOutput = false;
         }
 
 
@@ -212,7 +214,34 @@ namespace Image2Pdf.UI.Wpf
 
         #region Page 3: Generate PDF
 
-        private async void convertButton_Click(object sender, RoutedEventArgs e)
+        private void convertButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdatePageElements(false);
+
+            try
+            {
+                StartProcess();
+
+                wizard.CancelEnabled = false;
+                wizard.BackEnabled = false;
+                openPdfButton.IsEnabled = true;
+                convertButton.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                progressMessageTextBox.Foreground = new SolidColorBrush(Colors.Red);
+                progressMessageTextBox.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        private void UpdatePageElements(bool enable)
+        {
+            inputFileActionContainer.IsEnabled = false;
+            progressMessageTextBox.Visibility = Visibility.Visible;
+
+        }
+
+        private void StartProcess()
         {
             var sourceFileList = fileListBox.Items.Cast<ListBoxItem>()
                 .Select(lbi => lbi.Tag.ToString())
@@ -223,13 +252,13 @@ namespace Image2Pdf.UI.Wpf
 
             var progress = new Progress<TaskProgress>(prog =>
             {
-                textBox.Text = prog.StatusMessage;
+                progressMessageTextBox.Text = prog.StatusMessage;
                 progressBar.Value = prog.ProcessedInputCount;
             });
 
             var outputFilePath = outputFileNameTextBox.Text;
             var converter = new ImageToPdfConverter(sourceFileList, outputFilePath, _inputFileHandlingStrategy);
-            await Task.Run(() => converter.ConvertImagesToPdf(progress));
+            Task.Run(() => converter.ConvertImagesToPdf(progress));
         }
 
         private void openPdfButton_Click(object sender, RoutedEventArgs e)
@@ -254,7 +283,32 @@ namespace Image2Pdf.UI.Wpf
                 case 4: _inputFileHandlingStrategy = new BackupInputFilesStrategy(); break;
                 case 5: _inputFileHandlingStrategy = new RenameInputFilesStrategy(); break;
             }
-            
+        }
+
+        private int GetSelectedInputFileHandlingStrategy()
+        {
+            RadioButton selectedOption = inputFileStrategyRadio1;
+
+            if      (inputFileStrategyRadio1.IsChecked.Value) { selectedOption = inputFileStrategyRadio1; }
+            else if (inputFileStrategyRadio2.IsChecked.Value) { selectedOption = inputFileStrategyRadio2; }
+            else if (inputFileStrategyRadio3.IsChecked.Value) { selectedOption = inputFileStrategyRadio3; }
+            else if (inputFileStrategyRadio4.IsChecked.Value) { selectedOption = inputFileStrategyRadio4; }
+            else if (inputFileStrategyRadio5.IsChecked.Value) { selectedOption = inputFileStrategyRadio5; }
+
+            return int.Parse(selectedOption.Tag.ToString());
+        }
+
+        private void SetSelectedInputFileHandlingStrategy()
+        {
+            switch (UserPreferences.Default.InputFileStrategy)
+            {
+                case 1: inputFileStrategyRadio1.IsChecked = true; break;
+                case 2: inputFileStrategyRadio2.IsChecked = true; break;
+                case 3: inputFileStrategyRadio3.IsChecked = true; break;
+                case 4: inputFileStrategyRadio4.IsChecked = true; break;
+                case 5: inputFileStrategyRadio5.IsChecked = true; break;
+                default: inputFileStrategyRadio1.IsChecked = true; break;
+            }
         }
 
         #endregion
@@ -280,7 +334,8 @@ namespace Image2Pdf.UI.Wpf
 
         private void SaveConfigChanges()
         {
-            throw new NotImplementedException();
+            UserPreferences.Default.InputFileStrategy = GetSelectedInputFileHandlingStrategy();
+            UserPreferences.Default.Save();
         }
 
         private void ValidateInputPage()
@@ -294,13 +349,28 @@ namespace Image2Pdf.UI.Wpf
                 wizard.NextEnabled = true;
             }
         }
-        
+
         private void wizard_SelectedPageChanging(object sender, WizardPageSelectionChangeEventArgs e)
         {
             if (e.NewPage.Name == "output")
             {
-                outputFileNameTextBox.Text = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ImageFileCollection.First().Tag.ToString()), "output.pdf");
+                if (!_userUpdatedOutput)
+                {
+                    outputFileNameTextBox.Text = Path.Combine(
+                        Path.GetDirectoryName(ImageFileCollection.First().Tag.ToString()), 
+                        $"image2df-output-{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.pdf");
+                    _userUpdatedOutput = false;
+                }
             }
+            else if (e.NewPage.Name == "run")
+            {
+                wizard.NextEnabled = false;
+            }
+        }
+
+        private void outputFileNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _userUpdatedOutput = true;
         }
     }
 }

@@ -1,13 +1,12 @@
-﻿<Window
+﻿<Window x:Class="Image2Pdf.UI.Wpf.Dummy"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Image2Pdf.UI.Wpf"
-        xmlns:syncfusion="http://schemas.syncfusion.com/wpf" x:Class="Image2Pdf.UI.Wpf.MainWindow"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
         mc:Ignorable="d"
-        Title="Image2PDF" Height="466" Width="486"
-        ResizeMode="NoResize">
+        Title="Image2PDF" Height="466" Width="486">
     <Grid>
 
         <syncfusion:WizardControl x:Name="wizard" 
@@ -54,10 +53,10 @@
                         <RadioButton Name="inputFileStrategyRadio4" Checked="radioButton_Checked" GroupName="InputFileAction" Content="Backup (Under [output pdf path]\images-of-[output pdf filename])" Tag="4" />
                         <RadioButton Name="inputFileStrategyRadio5" Checked="radioButton_Checked" GroupName="InputFileAction" Content="Rename ([original filename]-Page-[n]-of-[output pdf filename].ext)" Tag="5" />
                     </StackPanel>
-                    
+
                     <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="10" VerticalAlignment="Top" Width="200" Margin="20,100,0,0" Visibility="Hidden"/>
                     <TextBox x:Name="progressMessageTextBox" HorizontalAlignment="Left" Height="40" Margin="20,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="true"/>
-                    
+
                     <Button x:Name="convertButton" Content="Convert Image(s) to PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="20,200,0,0" Click="convertButton_Click"/>
                     <Button x:Name="openPdfButton" Content="Open PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="240,200,0,0" Click="openPdfButton_Click" IsEnabled="False"/>
                 </Grid>
