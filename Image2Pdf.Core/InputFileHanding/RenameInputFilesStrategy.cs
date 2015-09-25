@@ -9,7 +9,7 @@ namespace Image2Pdf.Core.InputFileHanding
 {
     public class RenameInputFilesStrategy : IInputFileHandlingStrategy
     {
-        public void Process(List<string> sourceFileList, string outputFilePath, IProgress<TaskProgress> progress)
+        public void Process(List<string> sourceFileList, string outputFilePath)
         {
             // Renamed file format: [original filename]-Page-[n]-of-[output pdf filename].ext
             sourceFileList.ForEach(f =>
