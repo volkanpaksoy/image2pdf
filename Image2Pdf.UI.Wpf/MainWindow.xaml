@@ -29,20 +29,29 @@
 
             <syncfusion:WizardPage Name="input">
                 <Grid>
-                    <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="33,36,0,0" VerticalAlignment="Top" Width="224" SelectionChanged="fileListBox_SelectionChanged" SelectionMode="Extended" ItemsSource="{Binding Path=ImageFileCollection}"/>
-                    <Button x:Name="moveUpButton" Content="Up" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="30" Click="moveUpButton_Click" IsEnabled="False"/>
-                    <Button x:Name="moveDownButton" Content="Down" HorizontalAlignment="Left" Margin="0,134,0,0" VerticalAlignment="Top" Width="30" Click="moveDownButton_Click" IsEnabled="False"/>
-                    <Button x:Name="selectFilesButton" Content="Add Images" HorizontalAlignment="Left" Margin="33,243,0,0" VerticalAlignment="Top" Width="104" Click="selectFilesButton_Click"/>
-                    <Button x:Name="deleteFilesButton" Content="Remove selected" HorizontalAlignment="Left" Margin="142,243,0,0" VerticalAlignment="Top" Width="115" Click="deleteFilesButton_Click" IsEnabled="False"/>
-                    <CheckBox x:Name="removeDuplicatesCheckbox" HorizontalAlignment="Left" Margin="290,36,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.265,-1.688" Width="121" Height="20" IsChecked="True" Checked="removeDuplicatesCheckbox_Checked">
-                        <TextBlock TextWrapping="Wrap" Text="Remove duplicates automatically" Height="50" />
+                    <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="35,10,0,0" VerticalAlignment="Top" Width="384" SelectionChanged="fileListBox_SelectionChanged" SelectionMode="Extended" ItemsSource="{Binding Path=ImageFileCollection}" />
+                    <Button x:Name="moveUpButton" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="32" Click="moveUpButton_Click" IsEnabled="False" Height="32" >
+                        <StackPanel>
+                            <Image Source="/res/arrow_up.ico" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="moveDownButton" HorizontalAlignment="Left" Margin="0,145,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="moveDownButton_Click" IsEnabled="False" >
+                        <StackPanel>
+                            <Image Source="/res/arrow_down.ico" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="selectFilesButton" Content="Add Images" HorizontalAlignment="Left" Margin="35,217,0,0" VerticalAlignment="Top" Width="176" Click="selectFilesButton_Click" />
+                    <Button x:Name="deleteFilesButton" Content="Remove selected" HorizontalAlignment="Left" Margin="216,217,0,0" VerticalAlignment="Top" Width="203" Click="deleteFilesButton_Click" IsEnabled="False" />
+                    <CheckBox x:Name="removeDuplicatesCheckbox" HorizontalAlignment="Left" Margin="35,257,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.265,-1.688" Width="221" Height="20" IsChecked="True" Checked="removeDuplicatesCheckbox_Checked">
+                        <TextBlock TextWrapping="Wrap" Text="Remove duplicates automatically" Height="30" />
                     </CheckBox>
                 </Grid>
             </syncfusion:WizardPage>
             <syncfusion:WizardPage Name="output">
                 <Grid>
-                    <TextBox x:Name="outputFileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="33,288,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" TextChanged="outputFileNameTextBox_TextChanged" />
-                    <Button x:Name="selectOutputDirectory" Content="..." HorizontalAlignment="Left" Margin="261,288,0,0" VerticalAlignment="Top" Width="36" Click="selectOutputDirectory_Click"/>
+                    <TextBox x:Name="outputFileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="20,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" TextChanged="outputFileNameTextBox_TextChanged" />
+                    <Button x:Name="selectOutputDirectory" Content="Select output directory" HorizontalAlignment="Left" Margin="130,80,0,0" VerticalAlignment="Top" Width="180" Height="40" Click="selectOutputDirectory_Click"/>
+                    <CheckBox x:Name="useFirstImageFolder" HorizontalAlignment="Left" Margin="20,160,0,0" VerticalAlignment="Top" Width="220" Height="20" IsChecked="True" Content="Use first image's folder"/>
                 </Grid>
             </syncfusion:WizardPage>
 
@@ -56,14 +65,18 @@
                         <RadioButton Name="inputFileStrategyRadio4" Checked="radioButton_Checked" GroupName="InputFileAction" Content="Backup (Under [output pdf path]\images-of-[output pdf filename])" Tag="4" />
                         <RadioButton Name="inputFileStrategyRadio5" Checked="radioButton_Checked" GroupName="InputFileAction" Content="Rename ([original filename]-Page-[n]-of-[output pdf filename].ext)" Tag="5" />
                     </StackPanel>
-                    
-                    <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="10" VerticalAlignment="Top" Width="200" Margin="20,100,0,0" Visibility="Hidden"/>
-                    <TextBox x:Name="progressMessageTextBox" HorizontalAlignment="Left" Height="40" Margin="20,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="true"/>
-                    
-                    <Button x:Name="convertButton" Content="Convert Image(s) to PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="20,200,0,0" Click="convertButton_Click"/>
-                    <Button x:Name="openPdfButton" Content="Open PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="240,200,0,0" Click="openPdfButton_Click" IsEnabled="False"/>
+
+                    <Button x:Name="convertButton" Content="Convert Image(s) to PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="20,140,0,0" Click="convertButton_Click"/>
+                    <Button x:Name="openPdfButton" Content="Open PDF" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="50" Margin="240,140,0,0" Click="openPdfButton_Click" IsEnabled="False"/>
+
+                    <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="420" Margin="20,220,0,0" Visibility="Hidden"/>
+                    <TextBox x:Name="progressMessageTextBox" HorizontalAlignment="Left" Height="20" Margin="20,250,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420" IsReadOnly="true" Visibility="Hidden"/>
                 </Grid>
             </syncfusion:WizardPage>
         </syncfusion:WizardControl>
     </Grid>
+
+
 </Window>
+
+    
