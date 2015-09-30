@@ -218,16 +218,11 @@ namespace Image2Pdf.UI.Wpf
         {
             try
             {
-                convertButton.IsEnabled = false;
-                wizard.BackEnabled = false;
-                wizard.CancelEnabled = false;
-                inputFileActionContainer.IsEnabled = false;
-                progressMessageTextBox.Visibility = Visibility.Visible;
+                PreparePageForPreProcess();
 
                 await StartProcess();
-                
-                openPdfButton.IsEnabled = true;
-                wizard.FinishEnabled = true;
+
+                PreparePageForPostProcess();
             }
             catch (Exception ex)
             {
@@ -238,6 +233,21 @@ namespace Image2Pdf.UI.Wpf
             {
                 
             }
+        }
+
+        private void PreparePageForPostProcess()
+        {
+            openPdfButton.IsEnabled = true;
+            wizard.FinishEnabled = true;
+        }
+
+        private void PreparePageForPreProcess()
+        {
+            convertButton.IsEnabled = false;
+            wizard.BackEnabled = false;
+            wizard.CancelEnabled = false;
+            inputFileActionContainer.IsEnabled = false;
+            progressMessageTextBox.Visibility = Visibility.Visible;
         }
 
         private async Task StartProcess()
@@ -327,12 +337,16 @@ namespace Image2Pdf.UI.Wpf
 
         private void CleanUp()
         {
-            fileListBox.Items.Clear();
+            ImageFileCollection.Clear();
+            
+            inputFileActionContainer.IsEnabled = true;
+            progressMessageTextBox.Visibility = Visibility.Hidden;
+            progressBar.Visibility = Visibility.Hidden;
+            openPdfButton.IsEnabled = false;
+            convertButton.IsEnabled = true;
+            // LoadConfig();
 
             wizard.SelectedWizardPage = (WizardPage)wizard.Items.GetItemAt(0);
-
-
-            // LoadConfig();
         }
 
         private void wizard_Cancel(object sender, RoutedEventArgs e)
@@ -395,6 +409,12 @@ namespace Image2Pdf.UI.Wpf
         private void outputFileNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _userUpdatedOutput = true;
+        }
+
+        private void wizard_About(object sender, RoutedEventArgs e)
+        {
+            About about = new About();
+            about.ShowDialog();
         }
     }
 }

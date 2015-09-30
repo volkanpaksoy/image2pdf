@@ -17,9 +17,9 @@ namespace Image2Pdf.UI.Wpf
     /// <summary>
     /// Interaction logic for Dummy.xaml
     /// </summary>
-    public partial class Dummy : Window
+    public partial class About : Window
     {
-        public Dummy()
+        public About()
         {
             InitializeComponent();
         }

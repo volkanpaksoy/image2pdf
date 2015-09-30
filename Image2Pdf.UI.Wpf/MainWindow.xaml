@@ -6,15 +6,14 @@
         xmlns:local="clr-namespace:Image2Pdf.UI.Wpf"
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf" x:Class="Image2Pdf.UI.Wpf.MainWindow"
         mc:Ignorable="d"
-        Title="Image2PDF" Height="466" Width="486"
+        Title="Image2PDF" Height="500" Width="500"
         ResizeMode="NoResize">
     <Grid>
-
         <syncfusion:WizardControl x:Name="wizard" 
-                                  HorizontalAlignment="Left" 
-                                  VerticalAlignment="Top" 
-                                  Height="426" 
-                                  Width="468" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Height="460" 
+                                  Width="490" 
                                   Next="wizard_Next" 
                                   Finish="wizard_Finish" 
                                   FinishText="Restart"
@@ -22,12 +21,19 @@
                                   Cancel="wizard_Cancel" 
                                   FinishButtonClosesWindow="False" 
                                   CancelButtonCancelsWindow="False" 
-                                  HelpVisible="False" 
-                                  HelpText="" 
+                                  HelpVisible="True" 
+                                  HelpText="About" 
                                   NextEnabled="False" 
-                                  SelectedPageChanging="wizard_SelectedPageChanging" >
-
-            <syncfusion:WizardPage Name="input">
+                                  Help="wizard_About"
+                                  SelectedPageChanging="wizard_SelectedPageChanging">
+            
+            <syncfusion:WizardPage Name="input" 
+                                   Title="Step 1: Select input files" 
+                                   Description="Select the images and re-order them as the order in the list will determine the page order" 
+                                   BannerImage="res/pdfops.png" 
+                                   BannerImageHeight="64" 
+                                   BannerImageWidth="64" 
+                                   BannerBackground="AliceBlue">
                 <Grid>
                     <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="35,10,0,0" VerticalAlignment="Top" Width="384" SelectionChanged="fileListBox_SelectionChanged" SelectionMode="Extended" ItemsSource="{Binding Path=ImageFileCollection}" />
                     <Button x:Name="moveUpButton" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="32" Click="moveUpButton_Click" IsEnabled="False" Height="32" >
@@ -47,15 +53,26 @@
                     </CheckBox>
                 </Grid>
             </syncfusion:WizardPage>
-            <syncfusion:WizardPage Name="output">
+            <syncfusion:WizardPage Name="output"
+                                   Title="Step 1: Select output directory and file name" 
+                                   Description="Select the directory where the output PDF will be created" 
+                                   BannerImage="res/pdfops.png" 
+                                   BannerImageHeight="64" 
+                                   BannerImageWidth="64" 
+                                   BannerBackground="AliceBlue">
                 <Grid>
                     <TextBox x:Name="outputFileNameTextBox" HorizontalAlignment="Left" Height="23" Margin="20,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" TextChanged="outputFileNameTextBox_TextChanged" />
                     <Button x:Name="selectOutputDirectory" Content="Select output directory" HorizontalAlignment="Left" Margin="130,80,0,0" VerticalAlignment="Top" Width="180" Height="40" Click="selectOutputDirectory_Click"/>
                     <CheckBox x:Name="useFirstImageFolder" HorizontalAlignment="Left" Margin="20,160,0,0" VerticalAlignment="Top" Width="220" Height="20" IsChecked="True" Content="Use first image's folder"/>
                 </Grid>
             </syncfusion:WizardPage>
-
-            <syncfusion:WizardPage Name="run">
+            <syncfusion:WizardPage Name="run"
+                                   Title="Step 3: Create the PDF" 
+                                   Description="Select an input file handling method and generate the PDF. You can view the created file after the operation has been completed successfully" 
+                                   BannerImage="res/pdfops.png" 
+                                   BannerImageHeight="64" 
+                                   BannerImageWidth="64" 
+                                   BannerBackground="AliceBlue">
                 <Grid>
                     <StackPanel Name="inputFileActionContainer">
                         <Label Content="Action to take on input files:" />
