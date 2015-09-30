@@ -21,7 +21,7 @@
                                   Cancel="wizard_Cancel" 
                                   FinishButtonClosesWindow="False" 
                                   CancelButtonCancelsWindow="False" 
-                                  HelpVisible="True" 
+                                  HelpVisible="False" 
                                   HelpText="About" 
                                   NextEnabled="False" 
                                   Help="wizard_About"
@@ -38,12 +38,12 @@
                     <ListBox x:Name="fileListBox" HorizontalAlignment="Left" Height="202" Margin="35,10,0,0" VerticalAlignment="Top" Width="384" SelectionChanged="fileListBox_SelectionChanged" SelectionMode="Extended" ItemsSource="{Binding Path=ImageFileCollection}" />
                     <Button x:Name="moveUpButton" HorizontalAlignment="Left" Margin="0,107,0,0" VerticalAlignment="Top" Width="32" Click="moveUpButton_Click" IsEnabled="False" Height="32" >
                         <StackPanel>
-                            <Image Source="/res/arrow_up.ico" />
+                            <Image Source="/res/arrow_up.png" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="moveDownButton" HorizontalAlignment="Left" Margin="0,145,0,0" VerticalAlignment="Top" Width="32" Height="32" Click="moveDownButton_Click" IsEnabled="False" >
                         <StackPanel>
-                            <Image Source="/res/arrow_down.ico" />
+                            <Image Source="/res/arrow_down.png" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="selectFilesButton" Content="Add Images" HorizontalAlignment="Left" Margin="35,217,0,0" VerticalAlignment="Top" Width="176" Click="selectFilesButton_Click" />

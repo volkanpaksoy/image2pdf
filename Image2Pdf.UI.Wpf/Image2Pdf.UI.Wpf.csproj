@@ -121,11 +121,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="res\arrow_down.ico" />
-    <Resource Include="res\arrow_up.ico" />
+    <Resource Include="res\pdfops.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="res\pdfops.png" />
+    <Resource Include="res\arrow_down.png" />
+    <Resource Include="res\arrow_up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

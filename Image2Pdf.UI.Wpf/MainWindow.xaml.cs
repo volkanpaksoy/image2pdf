@@ -239,6 +239,8 @@ namespace Image2Pdf.UI.Wpf
         {
             openPdfButton.IsEnabled = true;
             wizard.FinishEnabled = true;
+            wizard.CancelEnabled = true;
+            wizard.CancelText = "Close";
         }
 
         private void PreparePageForPreProcess()
@@ -344,7 +346,8 @@ namespace Image2Pdf.UI.Wpf
             progressBar.Visibility = Visibility.Hidden;
             openPdfButton.IsEnabled = false;
             convertButton.IsEnabled = true;
-            // LoadConfig();
+
+            wizard.CancelText = "Cancel";
 
             wizard.SelectedWizardPage = (WizardPage)wizard.Items.GetItemAt(0);
         }
