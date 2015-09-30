@@ -227,6 +227,7 @@ namespace Image2Pdf.UI.Wpf
                 await StartProcess();
                 
                 openPdfButton.IsEnabled = true;
+                wizard.FinishEnabled = true;
             }
             catch (Exception ex)
             {
@@ -235,7 +236,7 @@ namespace Image2Pdf.UI.Wpf
             }
             finally
             {
-                wizard.FinishEnabled = true;
+                
             }
         }
 
@@ -256,8 +257,6 @@ namespace Image2Pdf.UI.Wpf
 
             var outputFilePath = outputFileNameTextBox.Text;
             var converter = new ImageToPdfConverter(sourceFileList, outputFilePath, _inputFileHandlingStrategy);
-            // Task process = Task.Run(() => converter.ConvertImagesToPdf(progress));
-            // Task.WaitAll(process);
 
             await Task.Run(() => converter.ConvertImagesToPdf(progress));
         }
@@ -322,6 +321,18 @@ namespace Image2Pdf.UI.Wpf
         private void wizard_Finish(object sender, RoutedEventArgs e)
         {
             SaveConfigChanges();
+
+            CleanUp();
+        }
+
+        private void CleanUp()
+        {
+            fileListBox.Items.Clear();
+
+            wizard.SelectedWizardPage = (WizardPage)wizard.Items.GetItemAt(0);
+
+
+            // LoadConfig();
         }
 
         private void wizard_Cancel(object sender, RoutedEventArgs e)
