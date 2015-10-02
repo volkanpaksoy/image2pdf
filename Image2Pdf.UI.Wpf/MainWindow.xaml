@@ -7,7 +7,8 @@
         xmlns:syncfusion="http://schemas.syncfusion.com/wpf" x:Class="Image2Pdf.UI.Wpf.MainWindow"
         mc:Ignorable="d"
         Title="Image2PDF" Height="500" Width="500"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Icon="res/pdfops.png">
     <Grid>
         <syncfusion:WizardControl x:Name="wizard" 
                                   HorizontalAlignment="Center" 
