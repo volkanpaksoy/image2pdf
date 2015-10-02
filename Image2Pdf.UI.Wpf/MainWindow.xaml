@@ -55,7 +55,7 @@
                 </Grid>
             </syncfusion:WizardPage>
             <syncfusion:WizardPage Name="output"
-                                   Title="Step 1: Select output directory and file name" 
+                                   Title="Step 2: Select output directory and file name" 
                                    Description="Select the directory where the output PDF will be created" 
                                    BannerImage="res/pdfops.png" 
                                    BannerImageHeight="64" 
