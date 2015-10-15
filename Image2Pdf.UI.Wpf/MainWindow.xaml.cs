@@ -229,10 +229,6 @@ namespace Image2Pdf.UI.Wpf
                 progressMessageTextBox.Foreground = new SolidColorBrush(Colors.Red);
                 progressMessageTextBox.Text = $"Error: {ex.Message}";
             }
-            finally
-            {
-                
-            }
         }
 
         private void PreparePageForPostProcess()
@@ -241,6 +237,7 @@ namespace Image2Pdf.UI.Wpf
             wizard.FinishEnabled = true;
             wizard.CancelEnabled = true;
             wizard.CancelText = "Close";
+            wizard.Focus();
         }
 
         private void PreparePageForPreProcess()
@@ -342,8 +339,16 @@ namespace Image2Pdf.UI.Wpf
             ImageFileCollection.Clear();
             
             inputFileActionContainer.IsEnabled = true;
+
+            _userUpdatedOutput = false;
+
+
+            progressMessageTextBox.Text = string.Empty;
             progressMessageTextBox.Visibility = Visibility.Hidden;
+
+            progressBar.Value = 0;
             progressBar.Visibility = Visibility.Hidden;
+
             openPdfButton.IsEnabled = false;
             convertButton.IsEnabled = true;
 
