@@ -9,12 +9,12 @@ As you might expect you provide the list of input images, re-order them if neede
 
 Step 1: Select input
 
-![Page 1: Specify input image files](https://s3-eu-west-1.amazonaws.com/vpblogimg/2015/09/image2pdf-page1.png)
+![Page 1: Specify input image files](image2pdf-page1.png)
 
 Step 2: Select output
 
-![Page 2: Specify output PDF path](https://s3-eu-west-1.amazonaws.com/vpblogimg/2015/09/image2pdf-page2.png)
+![Page 2: Specify output PDF path](image2pdf-page2.png)
 
 Step 3: Go!
 
-![Page 3: Run!](https://s3-eu-west-1.amazonaws.com/vpblogimg/2015/09/image2pdf-page3.png)
+![Page 3: Run!](image2pdf-page3.png)
